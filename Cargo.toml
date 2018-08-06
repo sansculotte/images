@@ -1,0 +1,7 @@
+[package]
+name = "images"
+version = "0.1.0"
+authors = ["Ulrich Berthold <ub@artfacts.net>"]
+
+[dependencies]
+iron = "0.6.*"
