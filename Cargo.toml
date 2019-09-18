@@ -4,5 +4,4 @@ version = "0.1.0"
 authors = ["Ulrich Berthold <ub@artfacts.net>"]
 
 [dependencies]
-rocket = "0.3.16"
-rocket_codegen = "0.3.16"
+rocket = "0.4.2"
