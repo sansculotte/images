@@ -1,10 +1,13 @@
-extern crate iron;
+#![feature(plugin)]
+#![plugin(rocket_codegen)]
 
-use iron::prelude::*;
-use iron::status;
+extern crate rocket;
+
+#[get("/")]
+fn index() -> &'static str {
+    "Hello, world!"
+}
 
 fn main() {
-    Iron::new(|_: &mut Request| {
-        Ok(Response::with((status::Ok, "Hello World!")))
-    }).http("localhost:3000").unwrap();
+    rocket::ignite().mount("/", routes![index]).launch();
 }
