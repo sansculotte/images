@@ -6,9 +6,9 @@
 use rocket::{Request, response::content, data::Data};
 
 
-#[get("/")]
-fn index() -> &'static str {
-    "Artfacts image server"
+#[get("/<domain>/<id>")]
+fn index(domain: String, id: String) -> String {
+    format!("Artfacts image server: {} {}", domain, id)
 }
 
 #[catch(404)]
