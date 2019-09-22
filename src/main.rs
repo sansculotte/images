@@ -15,12 +15,12 @@ const IMAGE_DIR: &str = "images/";
 
 #[get("/<domain>/<id>")]
 fn images(domain: String, id: String) -> Option<NamedFile> {
-    let filename = format!(
-        "{path}/{domain}/{id}.jpg",
-        path=IMAGE_DIR,
-        domain=domain,
-        id=id
-    );
+    let mut filename: PathBuf = [
+        IMAGE_DIR,
+        domain.as_str(),
+        id.as_str()
+    ].iter().collect();
+    filename.set_extension("jpg");
     NamedFile::open(&filename).ok()
 }
 
@@ -40,12 +40,12 @@ fn scaled(domain: String, id: String)
     match f {
         Ok(file) => Some(file),
         Err(_error) => {
-            let filename = format!(
-                "{path}/{domain}/{id}.jpg",
-                path=IMAGE_DIR,
-                domain=domain,
-                id=id
-            );
+            let mut filename: PathBuf = [
+                IMAGE_DIR,
+                domain.as_str(),
+                id.as_str()
+            ].iter().collect();
+            filename.set_extension("jpg");
             let i = image::open(&filename);
             match i {
                 Ok(img) => {
