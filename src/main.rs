@@ -5,56 +5,56 @@ extern crate rocket;
 extern crate image;
 
 use std::fs::File;
+use std::path::PathBuf;
 use image::{FilterType, PNG, JPEG};
-use rocket::{Request, response::content, data::Data};
+use rocket::{Request, response::content, response::NamedFile};
 
 
 const IMAGE_DIR: &str = "images/";
 
 
 #[get("/<domain>/<id>")]
-fn images(domain: String, id: String) -> Option<content::Plain<File>> {
+fn images(domain: String, id: String) -> Option<NamedFile> {
     let filename = format!(
         "{path}/{domain}/{id}.jpg",
         path=IMAGE_DIR,
         domain=domain,
         id=id
     );
-    File::open(&filename).map(|f| content::Plain(f)).ok()
+    NamedFile::open(&filename).ok()
 }
 
 #[get("/<domain>/thumb/<id>")]
 fn scaled(domain: String, id: String)
-    -> Option<content::Plain<File>>
+    -> Option<NamedFile>
 {
     let format = "thumb";
-    let cacheFilename = format!(
-        "{path}/{domain}/{format}/{id}.jpg",
-        path=IMAGE_DIR,
-        domain=domain,
-        format=format,
-        id=id
-    );
-    let f = File::open(&cacheFilename);
+    let mut cached: PathBuf = [
+        IMAGE_DIR,
+        domain.as_str(),
+        format,
+        id.as_str()
+    ].iter().collect();
+    cached.set_extension("jpg");
+    let f = NamedFile::open(&cached);
     match f {
-        Ok(file) => Some(content::Plain(file)),
-        Err(error) => {
+        Ok(file) => Some(file),
+        Err(_error) => {
             let filename = format!(
                 "{path}/{domain}/{id}.jpg",
                 path=IMAGE_DIR,
                 domain=domain,
                 id=id
             );
-            let i = image::open(filename);
+            let i = image::open(&filename);
             match i {
                 Ok(img) => {
                     let scaled = img.resize_to_fill(280, 180, FilterType::Nearest);
-                    let mut output = File::create(cacheFilename).unwrap();
+                    let mut output = File::create(&cached).unwrap();
                     scaled.write_to(&mut output, JPEG).unwrap();
-                    output.sync_all();
-                    Some(content::Plain(output))
+                    NamedFile::open(&cached).ok()
                 },
-                Err(error) => None 
+                Err(_error) => None
             }
         }
     }
