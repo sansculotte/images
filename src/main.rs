@@ -44,7 +44,7 @@ fn scaled(domain: String, image: String) -> Option<NamedFile> {
             let i = image::open(&filename);
             match i {
                 Ok(img) => {
-                    let scaled = img.resize_to_fill(280, 180, FilterType::Nearest);
+                    let scaled = img.resize_to_fill(280, 180, FilterType::CatmullRom);
                     let mut output = File::create(&cached).unwrap();
                     scaled.write_to(&mut output, JPEG).unwrap();
                     NamedFile::open(&cached).ok()
