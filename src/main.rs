@@ -6,46 +6,41 @@ extern crate image;
 
 use std::fs::File;
 use std::path::PathBuf;
-use image::{FilterType, PNG, JPEG};
+use image::{FilterType, JPEG};
 use rocket::{Request, response::content, response::NamedFile};
 
 
 const IMAGE_DIR: &str = "images/";
 
 
-#[get("/<domain>/<id>")]
-fn images(domain: String, id: String) -> Option<NamedFile> {
-    let mut filename: PathBuf = [
+#[get("/<domain>/<image>")]
+fn original(domain: String, image: String) -> Option<NamedFile> {
+    let filename: PathBuf = [
         IMAGE_DIR,
         domain.as_str(),
-        id.as_str()
+        image.as_str()
     ].iter().collect();
-    filename.set_extension("jpg");
     NamedFile::open(&filename).ok()
 }
 
-#[get("/<domain>/thumb/<id>")]
-fn scaled(domain: String, id: String)
-    -> Option<NamedFile>
-{
+#[get("/<domain>/thumb/<image>")]
+fn scaled(domain: String, image: String) -> Option<NamedFile> {
     let format = "thumb";
-    let mut cached: PathBuf = [
+    let cached: PathBuf = [
         IMAGE_DIR,
         domain.as_str(),
         format,
-        id.as_str()
+        image.as_str()
     ].iter().collect();
-    cached.set_extension("jpg");
     let f = NamedFile::open(&cached);
     match f {
         Ok(file) => Some(file),
         Err(_error) => {
-            let mut filename: PathBuf = [
+            let filename: PathBuf = [
                 IMAGE_DIR,
                 domain.as_str(),
-                id.as_str()
+                image.as_str()
             ].iter().collect();
-            filename.set_extension("jpg");
             let i = image::open(&filename);
             match i {
                 Ok(img) => {
@@ -71,7 +66,7 @@ fn not_found(request: &Request) -> content::Html<String> {
 
 fn main() {
     rocket::ignite()
-        .mount("/", routes![images, scaled])
+        .mount("/", routes![original, scaled])
         .register(catchers![not_found])
         .launch();
 }
