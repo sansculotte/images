@@ -29,7 +29,7 @@ fn scaled(domain: String, image: String) -> Option<NamedFile> {
         Ok(file) => Some(file),
         Err(_error) => {
             let filename = get_filename(domain.as_str(), image.as_str());
-            resize_and_crop_to(&filename, &cached, 280, 180).unwrap();
+            resize_and_crop_to(&filename, &cached, 280, 180)?;
             NamedFile::open(cached).ok()
        }
     }
