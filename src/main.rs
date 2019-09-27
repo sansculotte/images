@@ -3,7 +3,6 @@
 #[macro_use]
 extern crate rocket;
 
-use std::fs::File;
 use rocket::{Request, response::content, response::NamedFile};
 
 mod lib;
