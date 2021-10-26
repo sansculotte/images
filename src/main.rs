@@ -49,3 +49,49 @@ fn main() {
         .register(catchers![not_found])
         .launch();
 }
+
+
+#[cfg(test)]
+mod test {
+    use super::rocket;
+    use rocket::local::Client;
+    use rocket::http::{ContentType, Status};
+    use VERSION;
+
+    #[test]
+    fn hello_root() {
+        let client = Client::new(rocket()).expect("valid rocket instance");
+        let response = client.get("/").dispatch();
+        assert_eq!(response.status(), Status::NotFound);
+    }
+
+    #[test]
+    fn image_not_found() {
+        let client = Client::new(rocket()).expect("valid rocket instance");
+        let response = client.get("/test/xxx.jpg").dispatch();
+        assert_eq!(response.status(), Status::NotFound);
+    }
+
+    #[test]
+    fn image() {
+        let client = Client::new(rocket()).expect("valid rocket instance");
+        let response = client.get("/test/yyy.jpg").dispatch();
+        assert_eq!(response.status(), Status::Ok);
+        assert_eq!(response.content_type(), Some(ContentType::JPEG));
+    }
+
+    #[test]
+    fn thumb() {
+        let client = Client::new(rocket()).expect("valid rocket instance");
+        let response = client.get("/test/thumb/yyy.jpg").dispatch();
+        assert_eq!(response.status(), Status::Ok);
+        assert_eq!(response.content_type(), Some(ContentType::JPEG));
+    }
+
+    #[test]
+    fn thumb_not_found() {
+        let client = Client::new(rocket()).expect("valid rocket instance");
+        let response = client.get("/test/thumb/xxx.jpg").dispatch();
+        assert_eq!(response.status(), Status::NotFound);
+    }
+}
