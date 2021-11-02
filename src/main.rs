@@ -18,19 +18,19 @@ use lib::{
 
 #[get("/<domain>/<image>")]
 fn original(domain: String, image: String) -> Cached<Option<NamedFile>> {
-    let filename = get_filename(domain.as_str(), image.as_str());
+    let filename = get_filename(domain, image);
     Cached::long(NamedFile::open(filename.as_os_str()).ok())
 }
 
 #[get("/<domain>/thumb/<image>")]
 fn scaled(domain: String, image: String) -> Cached<Option<NamedFile>> {
     let format = "thumb";
-    let cached = get_cache_filename(domain.as_str(), image.as_str(), format);
+    let cached = get_cache_filename(domain.clone(), image.clone(), String::from(format));
     let f = NamedFile::open(&cached);
     match f {
         Ok(file) => Cached::long(Some(file)),
         Err(_error) => {
-            let filename = get_filename(domain.as_str(), image.as_str());
+            let filename = get_filename(domain, image);
             resize_and_crop_to(&filename, &cached, 280, 180);
             Cached::long(NamedFile::open(cached).ok())
        }
