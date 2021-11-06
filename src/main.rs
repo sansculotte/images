@@ -3,36 +3,42 @@
 #[macro_use]
 extern crate rocket;
 
-use rocket::{Request, response::content, response::NamedFile};
+use rocket::{Request, State};
+use rocket::response::{content, NamedFile};
+use rocket::fairing::AdHoc;
 
 mod cache;
-use cache::Cached;
+use cache::Cache;
+
+mod config;
+use config::Config;
 
 mod lib;
 use lib::{
     resize_and_crop_to,
     get_filename,
-    get_cache_filename
+    get_cache_filename,
 };
 
-
 #[get("/<domain>/<image>")]
-fn original(domain: String, image: String) -> Cached<Option<NamedFile>> {
-    let filename = get_filename(domain.as_str(), image.as_str());
-    Cached::long(NamedFile::open(filename.as_os_str()).ok())
+fn original(domain: String, image: String, config: State<Config>) -> Cache<Option<NamedFile>> {
+    let filename = get_filename(config.image_dir.clone(), domain, image);
+    Cache::deliver(config.cache_level.clone(), NamedFile::open(filename.as_os_str()).ok())
 }
 
 #[get("/<domain>/thumb/<image>")]
-fn scaled(domain: String, image: String) -> Cached<Option<NamedFile>> {
-    let format = "thumb";
-    let cached = get_cache_filename(domain.as_str(), image.as_str(), format);
+fn scaled(domain: String, image: String, config: State<Config>) -> Cache<Option<NamedFile>> {
+    let width = config.thumb_width;
+    let height = config.thumb_height;
+    let format = String::from("thumb");
+    let cached = get_cache_filename(config.image_dir.clone(), domain.clone(), image.clone(), format);
     let f = NamedFile::open(&cached);
     match f {
-        Ok(file) => Cached::long(Some(file)),
+        Ok(file) => Cache::deliver(config.cache_level.clone(), Some(file)),
         Err(_error) => {
-            let filename = get_filename(domain.as_str(), image.as_str());
-            resize_and_crop_to(&filename, &cached, 280, 180);
-            Cached::long(NamedFile::open(cached).ok())
+            let filename = get_filename(config.image_dir.clone(), domain, image);
+            resize_and_crop_to(&filename, &cached, width, height);
+            Cache::deliver(config.cache_level.clone(), NamedFile::open(cached).ok())
        }
     }
 }
@@ -49,6 +55,13 @@ fn not_found(request: &Request) -> content::Html<String> {
 fn rocket() -> rocket::Rocket {
     rocket::ignite()
         .mount("/", routes![original, scaled])
+        .attach(
+            AdHoc::on_attach("Config", |rocket| {
+                let rocket_config = rocket.config().clone();
+                let config = Config::from(&rocket_config);
+                Ok(rocket.manage(config))
+            })
+        )
         .register(catchers![not_found])
 }
 
