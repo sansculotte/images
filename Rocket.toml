@@ -1,0 +1,15 @@
+[global]
+thumb_width = 280
+thumb_height = 120
+
+[development]
+image_dir = "images"
+cache_level = "None"
+
+[stage]
+image_dir = "images"
+cache_level = "None"
+
+[production]
+image_dir = "images"
+cache_level = "Long"
