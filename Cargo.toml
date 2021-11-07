@@ -4,5 +4,5 @@ version = "0.1.0"
 authors = ["Ulrich Berthold <ub@artfacts.net>"]
 
 [dependencies]
-rocket = "0.4.2"
+rocket = "0.4.10"
 image = "0.22.2"
