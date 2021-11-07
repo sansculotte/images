@@ -9,7 +9,7 @@ pub enum CacheLevel {
 }
 
 impl CacheLevel {
-    pub fn parse(s: &str) -> Self {
+    pub fn from_str(s: &str) -> Self {
         match s {
             "None" => Self::None,
             "Short" => Self::Short,

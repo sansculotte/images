@@ -20,7 +20,9 @@ impl Config {
         let thumb_width: u32 = rocket_config.get_int("thumb_width").unwrap_or(THUMB_WIDTH) as u32;
         let thumb_height: u32 = rocket_config.get_int("thumb_height").unwrap_or(THUMB_HEIGHT) as u32;
         let cache_level =
-            CacheLevel::parse(rocket_config.get_str("cache_level").unwrap_or(CACHE_LEVEL));
+            CacheLevel::from_str(
+                rocket_config.get_str("cache_level").unwrap_or(CACHE_LEVEL)
+            );
         Self {
             image_dir: image_dir,
             thumb_width: thumb_width,
