@@ -7,11 +7,11 @@ use rocket::{Request, State};
 use rocket::response::{content, NamedFile};
 use rocket::fairing::AdHoc;
 
-mod cache;
-use cache::Cache;
-
 mod config;
 use config::Config;
+
+mod cache;
+use cache::Cache;
 
 mod lib;
 use lib::{
@@ -19,6 +19,7 @@ use lib::{
     get_filename,
     get_cache_filename,
 };
+
 
 #[get("/<domain>/<image>")]
 fn original(domain: String, image: String, config: State<Config>) -> Cache<Option<NamedFile>> {
@@ -75,6 +76,15 @@ mod test {
     use super::rocket;
     use rocket::local::Client;
     use rocket::http::{ContentType, Status};
+    use config::Config;
+
+    #[test]
+    fn test_config() {
+        let rocket_config = rocket::Config::new();
+        rocket_config.set("image_dir", "images");
+        let config = Config::from(&rocket_config);
+        assert_eq!(config.image_dir, "images")
+    }
 
     #[test]
     fn hello_root() {

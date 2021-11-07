@@ -1,8 +1,24 @@
 use rocket::{response::{self, Responder}, Request};
 
-#[path="config.rs"]
-mod config;
-use config::CacheLevel;
+#[derive(Clone, Debug)]
+pub enum CacheLevel {
+    None,
+    Short,
+    Medium,
+    Long,
+}
+
+impl CacheLevel {
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "None" => Self::None,
+            "Short" => Self::Short,
+            "Medium" => Self::Medium,
+            "Long" => Self::Long,
+            _ => Self::Long,
+        }
+    }
+}
 
 
 pub struct Cache<R>(R, &'static str);
