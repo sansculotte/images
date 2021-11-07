@@ -80,10 +80,11 @@ mod test {
 
     #[test]
     fn test_config() {
-        let rocket_config = rocket::Config::new();
-        rocket_config.set("image_dir", "images");
+        let rocket_config = rocket::Config::build(
+            rocket::config::Environment::Development
+        ).finalize().unwrap();
         let config = Config::from(&rocket_config);
-        assert_eq!(config.image_dir, "images")
+        assert_eq!(config.image_dir, "images/")
     }
 
     #[test]
