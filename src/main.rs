@@ -7,11 +7,11 @@ use rocket::{Request, State};
 use rocket::response::{content, NamedFile};
 use rocket::fairing::AdHoc;
 
-mod config;
-use config::Config;
-
 mod cache;
 use cache::Cache;
+
+mod config;
+use config::Config;
 
 mod lib;
 use lib::{
