@@ -3,11 +3,7 @@ const THUMB_WIDTH: i64 = 280;
 const THUMB_HEIGHT: i64 = 120;
 const CACHE_LEVEL: &str = "Long";
 
-
-#[path="cache.rs"]
-pub mod cache;
-use cache::CacheLevel;
-
+use crate::cache::CacheLevel;
 
 #[derive(Clone, Debug)]
 pub struct Config {
