@@ -1,0 +1,12 @@
+version: '2'
+services:
+    images:
+        build:
+          context: ./
+        ports:
+            - "8000:8000"
+        volumes:
+            - .:/var/src/application
+            - ./images:/srv/images
+        environment:
+            - ROCKET_IMAGE_DIR=/srv/images
