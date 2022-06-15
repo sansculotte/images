@@ -5,4 +5,4 @@ authors = ["Ulrich Berthold <ub@artfacts.net>"]
 
 [dependencies]
 rocket = "0.4.10"
-image = "0.22.2"
+image = "0.23.12"

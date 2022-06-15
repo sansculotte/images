@@ -2,7 +2,7 @@ extern crate image;
 extern crate rocket;
 
 use std::path::PathBuf;
-use self::image::{FilterType};
+use self::image::imageops::{FilterType};
 
 
 pub fn resize_and_crop_to(filename: &PathBuf, cached: &PathBuf, width: u32, height: u32) -> Option<()> {
